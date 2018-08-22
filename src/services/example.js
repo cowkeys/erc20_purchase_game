@@ -2,8 +2,8 @@ import Eth from 'ethjs-query';
 import EthContract from 'ethjs-contract';
 import tokenAbi from './contract/tokenAbi';
 import gameAbi from './contract/gameAbi';
-//var BigNumber = require('big-number');
-//var BigNumber = require('big-number');
+//import hourglassAbi from './contract/hourglassAbi';
+
 import {BigNumber} from 'bignumber.js'
 
 
@@ -12,8 +12,10 @@ var eth = new Eth(web3.currentProvider);
 var CoinBase = '';
 var tokenAddr = '0xBf10E654146ca9EA3A7B5Bf6c6cB4446688e5476';
 var gameAddr = '0x0Fc6eb03AC93EdaBA749EDbC87DdaBC2B221C86E';
+//var hourglassAddr = '0x3DD0864668C36D27B53a98137764c99F9FD5B7B2';
 var TokenContract;
 var GameContract;
+var hourglassContract;
 
 if (typeof web3 === 'undefined') {
     alert("failed to un");
@@ -33,8 +35,16 @@ function NewGameContract() {
   console.log(GameContract);
 }
 
+// function NewHourglassContract() {
+//   var contract = new EthContract(eth);
+//   var tokenCtr = contract(hourglassAbi);
+//   hourglassContract = tokenCtr.at(hourglassAddr);
+//   console.log(hourglassContract);
+// }
+
 NewTokenContract();
 NewGameContract();
+// NewHourglassContract();
 
 export function getCoinbase() {
   return new Promise(function(resolve, reject){
@@ -142,6 +152,23 @@ export function currentPlayer() {
         console.log(result2);
         resolve(new BigNumber(result2.keys).div('1000000000000000000').toNumber())
       })
+    })
+  })
+}
+
+
+//===================
+export function buyInICO({value}) {
+  return new Promise(function(resolve, reject){
+    hourglassContract.buy('0x0000000000000000000000000000000000000000',
+      {from:CoinBase,value:new BigNumber(value).times('1000000000000000000')},
+      function(error,result){
+      if (error) {
+        console.log(error)
+        reject(error);
+        return
+      }
+      resolve(result)
     })
   })
 }
