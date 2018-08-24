@@ -30,7 +30,6 @@ export function getCoinbase() {
         reject(err);
       } else {
         CoinBase = coinbase;
-        console.log('coinbase:',coinbase);
         resolve(coinbase);
       }
     });
@@ -118,7 +117,6 @@ export function opktokens() {
           reject(error);
           return
         }
-        console.log('opktoken:',result)
         resolve(fromBigNumber(result[0]));
       });
   })
@@ -132,7 +130,6 @@ export function sellprice() {
           reject(error);
           return
         }
-        console.log('sellprice:',result)
         resolve(fromBigNumber(result[0]));
     });
   })
@@ -147,7 +144,6 @@ export function buyprice() {
             reject(error);
             return
           }
-          console.log('buyprice:',result)
           resolve(fromBigNumber(result[0]));
         });
     })
@@ -161,7 +157,7 @@ export function isIco() {
         reject(error);
         return
       }
-      console.log('isico:',result);
+
       resolve(result[0]);
     });
   })
@@ -175,7 +171,21 @@ export function dividendsOf() {
         reject(error);
         return
       }
-      console.log('dividendsOf:',result);
+
+      resolve(fromBigNumber(result[0]));
+    });
+  })
+}
+
+export function myDividends() {
+  return new Promise(function(resolve, reject){
+    hourglassContract.dividendsOf(CoinBase,function(error,result){
+      if (error) {
+        console.log(error);
+        reject(error);
+        return
+      }
+      console.log('mydividends',result[0]);
       resolve(fromBigNumber(result[0]));
     });
   })

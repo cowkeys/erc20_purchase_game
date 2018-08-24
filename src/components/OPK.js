@@ -8,7 +8,10 @@ class OPK extends React.Component {
     this.state = {
       money : 100,
       eth : 0,
-      opk:0
+      opk:0,
+      longeth:0,
+      longselleth:0,
+      percent:0
     }
   }
 
@@ -16,14 +19,14 @@ class OPK extends React.Component {
     this.props.dispatch({
       type: 'opk/reloadinfo',
     });
-    
-    setInterval(() => {
-      this.props.dispatch({
-        type: 'opk/reloadinfo',
-      });
-    }, 3000);
-  }
 
+    // setInterval(() => {
+    //   this.props.dispatch({
+    //     type: 'opk/reloadinfo',
+    //   });
+    // }, 3000);
+  }
+//=======================opk=====================
   withdraw = () => {
     this.props.dispatch({
       type: 'opk/withdraw',
@@ -51,7 +54,6 @@ class OPK extends React.Component {
     })
   };
 
-
   sellopk = () => {
     console.log("sellopk:",this.state.opk);
     this.props.dispatch({
@@ -60,6 +62,49 @@ class OPK extends React.Component {
     });
   };
 
+  //=======================long=====================
+  longwithdraw = () => {
+    this.props.dispatch({
+      type: 'opk/longwithdraw',
+      payload: {},
+    });
+  };
+
+  onlongEthChange = (value) => {
+    this.setState({
+      longeth:value,
+    })
+  };
+
+  buylongkey = () => {
+    console.log("buy long key:",this.state.longeth);
+    this.props.dispatch({
+      type: 'opk/buylongkey',
+      payload: {value:+this.state.longeth},
+    });
+  };
+
+  onlongsellEthChange = (value) => {
+    this.setState({
+      longselleth:value,
+    })
+  };
+
+  //=========divieslong
+  onDistribute = () => {
+    this.props.dispatch({
+      type: 'opk/distribute',
+      payload: {percent:+this.state.percent},
+    });
+  };
+
+  onDistributeChange = (value) => {
+    this.setState({
+      percent:value,
+    })
+  };
+
+  //=======================================
   render() {
     return (
       <div style={{background: '#ECECEC', padding: '30px'}}>
@@ -71,7 +116,7 @@ class OPK extends React.Component {
             <Card title="当前账户余额(eth)" bordered={false}>{this.props.balance}</Card>
           </Col>
         </Row>
-        ..
+        -------------------opk------------------
         <Row gutter={16}>
           <Col span={12}>
             <Card title={'统计'+ ' | ico状态: ' + this.props.isico} bordered={false}>
@@ -100,6 +145,31 @@ class OPK extends React.Component {
             </Card>
           </Col>
         </Row>
+        -------------------opklong-------------------
+        <Row gutter={16}>
+          <Col span={24}>
+            <Card title={'统计 id='+this.props.pid + ' | active状态: ' + this.props.isactive} bordered={false}>
+              <InputNumber style={{ width: '150px',marginLeft:'20px'}} min={0} defaultValue={0} onChange={this.onDistributeChange}/>
+              <Button style={{ marginRight:'20px'}} type="primary" onClick={this.onDistribute}>Distribute</Button><br/>
+              key 持有数量 ：{this.props.keys} (key) / 买价：{this.props.keybuyprice} (eth) / win({this.props.vaults.win}) | gen({this.props.vaults.gen}) | aff({this.props.vaults.aff})
+            </Card>
+          </Col>
+        </Row>
+        ..
+        <Row gutter={16}>
+          <Col span={12}>
+            <Card title="购买" bordered={false}>
+              <InputNumber style={{ width: '150px',marginLeft:'20px'}} min={0} defaultValue={0} onChange={this.onlongEthChange}/>
+              (eth)<Button style={{ marginRight:'20px'}} type="primary" onClick={this.buylongkey}>买入key</Button>
+            </Card>
+          </Col>
+          <Col span={12}>
+            <Card title="提款(eth)" bordered={false}>
+              <InputNumber style={{ width: '150px',marginLeft:'20px' }} min={0} defaultValue={0} onChange={this.onlongsellEthChange}/>
+              <Button style={{ marginRight:'20px'}} type="primary" onClick={this.longwithdraw}>提款(eth)</Button>
+            </Card>
+          </Col>
+        </Row>
       </div>
     );
   }
@@ -107,9 +177,12 @@ class OPK extends React.Component {
 
 
 function mapStateToProps(state) {
-  const { address, balance,opk,buyprice,sellprice,opkdividend,isico } = state.opk;
+  const { address, balance,opk,buyprice,sellprice,opkdividend,isico,
+    isactive,keys,keybuyprice,vaults,pid } = state.opk;
+
   return {
     address, balance,opk,buyprice,sellprice,opkdividend,isico,
+    isactive,keys,keybuyprice,vaults,pid,
   };
 }
 
