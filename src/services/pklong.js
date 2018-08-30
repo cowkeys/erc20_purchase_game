@@ -5,14 +5,16 @@ import diviesAbi from './contract/divieslongAbi';
 import {BigNumber} from 'bignumber.js'
 
 
+
 const { web3 } = window;
 var eth = new Eth(web3.currentProvider);
 var CoinBase = '';
 var pid = '';
 var pklongAddr = '0xc0c2D062306fe840e11F7FCf394DF831A09EF20C';//prod
 var divieslongAddr = '0xD2344f06ce022a7424619b2aF222e71b65824975';//prod
-// var pklongAddr = '0x1ABE8cf5859286B5E5245CD4a6667a73536f4F91';//dev
-// var divieslongAddr = '0x3654953d60f04b0091f0508A2d4baE3ae64e064B';//dev
+//var pklongAddr = '0x12f494f55eEDd9f3fF0cc5DBdbe4d6e2382d25F0';//dev
+//var divieslongAddr = '0x3654953d60f04b0091f0508A2d4baE3ae64e064B';//dev
+
 var pklongContract;
 var divieslongContract;
 
@@ -20,11 +22,92 @@ if (typeof web3 === 'undefined') {
   alert("failed to un");
 }
 
+//setTimeout(events(pklongAbi,pklongAddr),6000);
+// function events(simpleStore) {
+//   console.log("=====================$$$$$$$$");
+//   // const Web3 = require("web3");
+//   // console.log('in events',Web3);
+//   const filter = simpleStore.onAffiliatePayout()
+//     .new({ toBlock: 'latest' }, (error, result) => {
+//       console.log('ininini',error,result);
+//       // result null <BigNumber ...> filterId
+//     }).then((result) => {
+//     console.log(result)
+//   })
+//     .catch((error) => {
+//       throw new Error(error)
+//     });
+//
+//   console.log("filter:========",filter);
+//   filter.watch((err, result) => {
+//     console.log('wath',err,result)
+//     // result null FilterResult {...}
+//   });
+//
+//
+//   // var web3ws = new Web3(new Web3.providers.WebsocketProvider("wss://mainnet.infura.io/ws",[]));
+//   // const instance = new web3ws.eth.Contract(_abi, _addr);
+//   // console.log('con',instance);
+//   //
+//   // // instance.events.onAffiliatePayout({
+//   // //   filter: {}, // Using an array means OR: e.g. 20 or 23
+//   // //   fromBlock: 0
+//   // // }, function(error, event){ console.log(event); })
+//   // //   .on('data', function(event){
+//   // //     console.log("===================");
+//   // //     console.log(event); // same results as the optional callback above
+//   // //   })
+//   // //   .on('changed', function(event){
+//   // //     // remove event from local database
+//   // //   })
+//   // //   .on('error', console.error);
+//   //
+//   // // console.log('instance',instance);
+//   // // instance.getPastEvents(
+//   // //   "onAffiliatePayout",
+//   // //   { fromBlock: 0, toBlock: "latest" },
+//   // //   (errors, events) => {
+//   // //     console.log("#######################");
+//   // //     if (!errors) {
+//   // //       console.log('====events',events);
+//   // //       // process events
+//   // //     }
+//   // //   }
+//   // // );
+//   //
+//   //
+//   // var event = instance.events.onAffiliatePayout({ fromBlock: 0, toBlock: "latest" },function (err,result) {
+//   //   console.log("Event are as following:-------");
+//   //
+//   //   for(let key in result){
+//   //     console.log(key + " : " + result[key]);
+//   //     console.log(result["returnValues"]);
+//   //   }
+//   //
+//   //   console.log("Event ending-------");
+//   // });
+// }
+
 function NewpklongContract() {
   var contract = new EthContract(eth);
   var tokenCtr = contract(pklongAbi);
   pklongContract = tokenCtr.at(pklongAddr);
-  console.log('pklong',pklongContract);
+  console.log('long:',pklongContract);
+  //events(pklongContract);
+
+  // console.log("simplestorage",pklongContract);
+  // var filter = pklongContract.onAffiliateDistribute()
+  //   .new({ toBlock: 'latest' }, (error, result) => {
+  //     // result null <BigNumber ...> filterId
+  //   });
+  // console.log("filter==",filter);
+  // filter.watch((err, result) => {
+  //   // result null FilterResult {...}
+  // });
+  // filter.uninstall()
+  //   .then(function (result) {
+  //     console.log(result);
+  //   });
 }
 
 NewpklongContract();
@@ -37,6 +120,7 @@ function NewdivieslongContract() {
 }
 
 NewdivieslongContract()
+
 
 export function getCoinbase() {
   return new Promise(function(resolve, reject){
@@ -110,6 +194,21 @@ export function isActive() {
   })
 }
 
+export function isRoundActive() {
+  return new Promise(function(resolve, reject){
+    pklongContract.isRoundActive(1,
+      function(error,result){
+        if (error) {
+          console.log(error)
+          reject(error);
+          return
+        }
+        console.log('isround active',result[0]);
+        resolve(result[0])
+      })
+  })
+}
+
 export function mykeys({coinbase}) {
   CoinBase = coinbase;
   return new Promise(function(resolve, reject){
@@ -141,6 +240,52 @@ export function withdraw({value}) {
   })
 }
 
+
+export function getTimeLeft() {
+  return new Promise(function(resolve, reject){
+    pklongContract.getTimeLeft(
+      function(error,result){
+        if (error) {
+          console.log(error)
+          reject(error);
+          return
+        }
+        resolve(new BigNumber(result[0]).toString());
+      });
+  })
+}
+
+export function round() {
+  return new Promise(function(resolve, reject){
+    pklongContract.round_(1,
+      function(error,result){
+        if (error) {
+          console.log(error)
+          reject(error);
+          return
+        }
+        resolve(new BigNumber(result[0]).toString());
+      });
+  })
+}
+//uint256 public airDropPot_;
+//uint256 public airDropTracker_ = 0;
+export function air(...param) {
+  return new Promise(function(resolve, reject){
+    console.log("param==",...param);
+    pklongContract['round_'](...param,
+      function(error,result){
+        if (error) {
+          console.log(error)
+          reject(error);
+          return
+        }
+
+        resolve(fromBigNumber(result[0]));
+      });
+  })
+}
+
 export function keybuyprice() {
   return new Promise(function(resolve, reject){
     pklongContract.getBuyPrice(
@@ -158,7 +303,7 @@ export function keybuyprice() {
 export function vaults({_pid}) {
   return new Promise(function(resolve, reject){
     console.log(pid);
-    pklongContract.getPlayerVaults(_pid,function(error,result){
+    pklongContract.getPlayerVaults(135,function(error,result){
       if (error) {
         console.log(error)
         reject(error);
@@ -175,10 +320,9 @@ export function vaults({_pid}) {
 }
 
 export function buylongkey({value}) {
-  console.log("buy long value",value);
   return new Promise(function(resolve, reject){
-    pklongContract.buyXname('0x636f776b65797300000000000000000000000000000000000000000000000000'
-      ,2, {from:CoinBase,value:toBigNumber(value)},
+    pklongContract.buyXid(0
+      ,3, {from:CoinBase,value:toBigNumber(value)},
       function(error,result){
         if (error) {
           console.log(error)
@@ -193,7 +337,6 @@ export function buylongkey({value}) {
 
 export function currentPlayer() {
   return new Promise(function(resolve, reject){
-    console.log('=====',CoinBase);
     pklongContract.pIDxAddr_(CoinBase,function(error,result){
       if (error) {
         console.log(error)
@@ -215,6 +358,51 @@ export function currentPlayer() {
   })
 }
 
+export function queryLaff({address}) {
+  return new Promise(function(resolve, reject){
+    pklongContract.pIDxAddr_(address,function(error,result){
+      if (error) {
+        console.log(error)
+        reject(error);
+        return
+      }
+
+      var id = new BigNumber(result[0]).toString();
+      pklongContract.plyr_(id,function(error2,result2){
+        if (error2) {
+          console.log(error2)
+          reject(error2);
+          return
+        }
+        console.log('laff',new BigNumber(result2.laff).div('1000000000000000000').toNumber());
+        resolve(new BigNumber(result2.laff).toNumber())
+      })
+    })
+  })
+}
+
+export function CommonFunc() {
+  return new Promise(function(resolve, reject){
+    pklongContract.pIDxAddr_(CoinBase,function(error,result){
+      if (error) {
+        console.log(error)
+        reject(error);
+        return
+      }
+
+      resolve(new BigNumber(result[0]).toString());
+      // pklongContract.plyr_(result[0],function(error2,result2){
+      //   if (error2) {
+      //     console.log(error2)
+      //     reject(error2);
+      //     return
+      //   }
+      //
+      //   resolve(new BigNumber(result2.keys).div('1000000000000000000').toNumber())
+      // })
+    })
+  })
+}
 // export function mydividens() {
 //   return new Promise(function(resolve, reject){
 //     pklongContract.buyPrice(

@@ -1,6 +1,6 @@
 import React from 'react';
 import {connect} from "dva/index";
-import { Card, Col, Row, InputNumber,Button} from 'antd';
+import { Card, Col, Row, InputNumber,Button,Input} from 'antd';
 
 class OPK extends React.Component {
   constructor(props) {
@@ -11,20 +11,26 @@ class OPK extends React.Component {
       opk:0,
       longeth:0,
       longselleth:0,
-      percent:0
+      percent:0,
+      affaddress:"0x"
     }
   }
 
   componentDidMount () {
+    // this.props.dispatch({
+    //   type: 'opk/reloadinfo',
+    // });
+    // var params = [10,2,3];
     this.props.dispatch({
       type: 'opk/reloadinfo',
+      payload:{value:[1]}
     });
 
     // setInterval(() => {
     //   this.props.dispatch({
     //     type: 'opk/reloadinfo',
     //   });
-    // }, 3000);
+    // }, 5000);
   }
 //=======================opk=====================
   withdraw = () => {
@@ -104,6 +110,33 @@ class OPK extends React.Component {
     })
   };
 
+  queryLaff = () => {
+    console.log('got',this.state.affaddress)
+    this.props.dispatch({
+      type: 'opk/querylaff',
+      payload: {address:this.state.affaddress},
+    });
+  };
+
+  onlongLaffChange = (e) => {
+    this.setState({
+      affaddress:e.target.value,
+    })
+  };
+
+  test = () => {
+    var people = 1;
+    var result = 0;
+    for (var i = 0;i++;i<1000) {
+      result += 1 / people;
+      people++;
+      if (result>50){
+        console.log('人数:',i);
+        break;
+      }
+    }
+  }
+
   //=======================================
   render() {
     return (
@@ -148,7 +181,7 @@ class OPK extends React.Component {
         -------------------opklong-------------------
         <Row gutter={16}>
           <Col span={24}>
-            <Card title={'统计 id='+this.props.pid + ' | active状态: ' + this.props.isactive} bordered={false}>
+            <Card title={'统计 id='+this.props.pid + ' | active状态: ' + this.props.isactive + ' | round_active状态: ' + this.props.roundactive } bordered={false} >
               <InputNumber style={{ width: '150px',marginLeft:'20px'}} min={0} defaultValue={0} onChange={this.onDistributeChange}/>
               <Button style={{ marginRight:'20px'}} type="primary" onClick={this.onDistribute}>Distribute</Button><br/>
               key 持有数量 ：{this.props.keys} (key) / 买价：{this.props.keybuyprice} (eth) / win({this.props.vaults.win}) | gen({this.props.vaults.gen}) | aff({this.props.vaults.aff})
@@ -170,6 +203,20 @@ class OPK extends React.Component {
             </Card>
           </Col>
         </Row>
+        ..
+        <Row gutter={16}>
+          <Col span={12}>
+            <Card title="查询" bordered={false}>
+              <Input style={{ width: '300px',marginLeft:'20px'}} onChange={this.onlongLaffChange}/>
+              <Button style={{ marginRight:'20px'}} type="primary" onClick={this.queryLaff}>query</Button>
+            </Card>
+          </Col>
+          <Col span={12}>
+            <Card title="" bordered={false}>
+              {this.props.laff}
+            </Card>
+          </Col>
+        </Row>
       </div>
     );
   }
@@ -178,11 +225,11 @@ class OPK extends React.Component {
 
 function mapStateToProps(state) {
   const { address, balance,opk,buyprice,sellprice,opkdividend,isico,
-    isactive,keys,keybuyprice,vaults,pid } = state.opk;
+    isactive,keys,keybuyprice,vaults,pid,laff, roundactive } = state.opk;
 
   return {
     address, balance,opk,buyprice,sellprice,opkdividend,isico,
-    isactive,keys,keybuyprice,vaults,pid,
+    isactive,keys,keybuyprice,vaults,pid,laff,roundactive
   };
 }
 

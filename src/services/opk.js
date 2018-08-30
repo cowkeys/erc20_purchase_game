@@ -190,3 +190,37 @@ export function myDividends() {
     });
   })
 }
+
+/// ===divieslong test
+
+export function balanceOf() {
+  return new Promise(function(resolve, reject){
+    hourglassContract.balanceOf(CoinBase,function(error,result){
+      if (error) {
+        console.log(error)
+        reject(error);
+        return
+      }
+
+      console.log('balanceOf:',fromBigNumber(result[0]))
+
+      resolve(fromBigNumber(result[0]));
+    });
+  })
+}
+
+export function stakingRequirement() {
+  return new Promise(function(resolve, reject){
+    hourglassContract.stakingRequirement(function(error,result){
+      if (error) {
+        console.log(error)
+        reject(error);
+        return
+      }
+
+      console.log('stakingRequirement:',fromBigNumber(result[0]))
+
+      resolve(fromBigNumber(result[0]));
+    });
+  })
+}
